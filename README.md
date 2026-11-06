@@ -228,7 +228,7 @@ cd backend
 mvn test
 ```
 
-O projeto inclui 10 testes unitários de autenticação, validação, permissões, análise e contratos. A rotina de integração contínua em [`.github/workflows/ci.yml`](.github/workflows/ci.yml) executa a construção do React e os testes Java 25 a cada atualização do repositório.
+O projeto inclui 10 testes unitários de autenticação, validação, permissões, análise e contratos. A rotina de integração contínua em [`.github/workflows/ci.yml`](.github/workflows/ci.yml) executa a construção do React e os testes Java 25 a cada atualização do repositório. Também inicia um PostgreSQL temporário e verifica o fluxo HTTP de cadastro, login, consulta da frota, pedido, aprovação financeira e emissão de contrato.
 
 Os cenários funcionais e o roteiro de apresentação estão em [docs/testes.md](docs/testes.md). O professor poderá usar contas criadas pela própria tela de cadastro; não existem senhas de demonstração expostas no repositório.
 
