@@ -1262,6 +1262,12 @@ function VehicleCard({
                 ? "Empresa"
                 : "Cliente"}
           </span>
+          <span>
+            <FileText size={15} /> Matrícula {vehicle.registration}
+          </span>
+          <span>
+            <UserRound size={15} /> {vehicle.ownerName}
+          </span>
         </div>
         <div className="vehicle-divider" />
         <div className="vehicle-bottom">
