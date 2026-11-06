@@ -10,8 +10,8 @@ jobs:
     name: React e TypeScript
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: npm
@@ -38,8 +38,8 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '25'
@@ -71,11 +71,17 @@ jobs:
             exit 1
           fi
           base=http://localhost:8080/api
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$base/vehicles")" = "401"
           client=$(curl -fsS -H 'Content-Type: application/json' -d '{"username":"teste.cliente","password":"Teste123456","role":"CLIENT","fullName":"Cliente de Teste","cpf":"12345678901","rg":"MG123456","address":"Rua Exemplo, 100","profession":"Estudante"}' "$base/auth/register")
           echo "$client" | jq -e '.role == "CLIENT" and (.token | length == 64)' >/dev/null
           client_token=$(echo "$client" | jq -r .token)
           login=$(curl -fsS -H 'Content-Type: application/json' -d '{"username":"teste.cliente","password":"Teste123456"}' "$base/auth/login")
           echo "$login" | jq -e '.role == "CLIENT"' >/dev/null
+          for number in 1 2 3; do
+            curl -fsS -H "Authorization: Bearer $client_token" -H 'Content-Type: application/json' -d "{\"employer\":\"Empregador $number\",\"monthlyIncome\":3000}" "$base/clients/me/employments" >/dev/null
+          done
+          curl -fsS -H "Authorization: Bearer $client_token" "$base/clients/me" | jq -e '.employments | length == 3' >/dev/null
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $client_token" -H 'Content-Type: application/json' -d '{"employer":"Empregador 4","monthlyIncome":2000}' "$base/clients/me/employments")" = "400"
           vehicles=$(curl -fsS -H "Authorization: Bearer $client_token" "$base/vehicles")
           echo "$vehicles" | jq -e 'length == 6' >/dev/null
           vehicle_id=$(echo "$vehicles" | jq -r '.[0].id')
@@ -84,11 +90,24 @@ jobs:
           rental=$(curl -fsS -H "Authorization: Bearer $client_token" -H 'Content-Type: application/json' -d "{\"vehicleId\":\"$vehicle_id\",\"startDate\":\"$start_date\",\"endDate\":\"$end_date\",\"notes\":\"Reserva de teste\"}" "$base/rentals")
           echo "$rental" | jq -e '.status == "PENDING"' >/dev/null
           rental_id=$(echo "$rental" | jq -r .id)
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $client_token" -H 'Content-Type: application/json' -d "{\"vehicleId\":\"$vehicle_id\",\"startDate\":\"$start_date\",\"endDate\":\"$end_date\"}" "$base/rentals")" = "409"
+          next_end=$(date -u -d '+5 days' +%F)
+          curl -fsS -X PUT -H "Authorization: Bearer $client_token" -H 'Content-Type: application/json' -d "{\"vehicleId\":\"$vehicle_id\",\"startDate\":\"$start_date\",\"endDate\":\"$next_end\",\"notes\":\"Pedido alterado\"}" "$base/rentals/$rental_id" | jq -e --arg end "$next_end" '.endDate == $end' >/dev/null
           agent=$(curl -fsS -H 'Content-Type: application/json' -d '{"username":"teste.agente","password":"Teste123456","role":"AGENT","agentName":"Empresa de Teste","agentType":"COMPANY","cnpj":"12345678000199"}' "$base/auth/register")
           echo "$agent" | jq -e '.role == "AGENT"' >/dev/null
           agent_token=$(echo "$agent" | jq -r .token)
+          bank=$(curl -fsS -H 'Content-Type: application/json' -d '{"username":"teste.banco","password":"Teste123456","role":"AGENT","agentName":"Banco de Teste","agentType":"BANK","cnpj":"98765432000188"}' "$base/auth/register")
+          echo "$bank" | jq -e '.role == "AGENT"' >/dev/null
+          bank_id=$(curl -fsS -H "Authorization: Bearer $agent_token" "$base/rentals/banks" | jq -r '.[0].id')
           reviewed=$(curl -fsS -X PATCH -H "Authorization: Bearer $agent_token" -H 'Content-Type: application/json' -d '{"status":"APPROVED","reviewNotes":"Renda aprovada na analise financeira."}' "$base/rentals/$rental_id/review")
           echo "$reviewed" | jq -e '.status == "APPROVED"' >/dev/null
-          contracted=$(curl -fsS -H "Authorization: Bearer $agent_token" -H 'Content-Type: application/json' -d '{"credit":false}' "$base/rentals/$rental_id/contract")
+          contracted=$(curl -fsS -H "Authorization: Bearer $agent_token" -H 'Content-Type: application/json' -d "{\"credit\":true,\"bankAgentId\":\"$bank_id\",\"principal\":2000,\"installments\":12}" "$base/rentals/$rental_id/contract")
           echo "$contracted" | jq -e '.status == "CONTRACTED"' >/dev/null
-          curl -fsS -H "Authorization: Bearer $client_token" "$base/rentals/contracts" | jq -e 'length == 1' >/dev/null
+          curl -fsS -H "Authorization: Bearer $client_token" "$base/rentals/contracts" | jq -e 'length == 1 and .[0].principal == 2000 and .[0].bankName == "Banco de Teste"' >/dev/null
+          vehicle_second=$(echo "$vehicles" | jq -r '.[1].id')
+          second=$(curl -fsS -H "Authorization: Bearer $client_token" -H 'Content-Type: application/json' -d "{\"vehicleId\":\"$vehicle_second\",\"startDate\":\"$start_date\",\"endDate\":\"$end_date\"}" "$base/rentals")
+          second_id=$(echo "$second" | jq -r .id)
+          curl -fsS -X PATCH -H "Authorization: Bearer $client_token" "$base/rentals/$second_id/cancel" | jq -e '.status == "CANCELLED"' >/dev/null
+          outsider=$(curl -fsS -H 'Content-Type: application/json' -d '{"username":"teste.outro","password":"Teste123456","role":"CLIENT","fullName":"Outro Cliente","cpf":"12345678902","rg":"MG987654","address":"Rua Dois, 200","profession":"Professor"}' "$base/auth/register")
+          outsider_token=$(echo "$outsider" | jq -r .token)
+          test "$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $outsider_token" "$base/rentals/$rental_id")" = "403"
