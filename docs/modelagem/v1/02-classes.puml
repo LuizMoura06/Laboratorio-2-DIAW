@@ -1,0 +1,42 @@
+@startuml
+!pragma layout smetana
+title AlugaMais — Diagrama de Classes (Modelo inicial)
+class Usuario {
+  id: UUID
+  usuario: String
+  senha: String
+  perfil: String
+}
+class Cliente {
+  id: UUID
+  nome: String
+  cpf: String
+  rg: String
+  endereco: String
+  profissao: String
+}
+class Agente {
+  id: UUID
+  nome: String
+  tipo: String
+  cnpj: String
+}
+class Veiculo {
+  id: UUID
+  matricula: String
+  ano: int
+  marca: String
+  modelo: String
+  placa: String
+}
+class Pedido {
+  id: UUID
+  retirada: Date
+  devolucao: Date
+  status: String
+}
+Usuario "1" -- "0..1" Cliente
+Usuario "1" -- "0..1" Agente
+Cliente "1" -- "0..*" Pedido
+Pedido "*" -- "1" Veiculo
+@enduml

@@ -1,0 +1,45 @@
+@startuml
+!pragma layout smetana
+title AlugaMais — Casos de Uso (Modelo revisado)
+left to right direction
+actor Cliente
+actor "Agente (empresa)" as Empresa
+actor "Agente (banco)" as Banco
+rectangle "AlugaMais — Sistema Web" {
+  usecase "Cadastrar e autenticar" as A
+  usecase "CRUD de cliente" as B
+  usecase "Gerenciar até 3 empregadores" as C
+  usecase "Consultar veículos" as D
+  usecase "Criar pedido de aluguel" as E
+  usecase "Consultar status" as F
+  usecase "Alterar/cancelar pedido" as G
+  usecase "Consultar pedidos e clientes" as H
+  usecase "Modificar pedido" as I
+  usecase "Emitir parecer financeiro" as J
+  usecase "Gerar contrato aprovado" as K
+  usecase "Associar contrato de crédito" as L
+  usecase "Consultar contratos" as M
+}
+Cliente --> A
+Cliente --> B
+Cliente --> C
+Cliente --> D
+Cliente --> E
+Cliente --> F
+Cliente --> G
+Cliente --> M
+Empresa --> A
+Empresa --> H
+Empresa --> I
+Empresa --> J
+Empresa --> K
+Empresa --> M
+Banco --> A
+Banco --> H
+Banco --> I
+Banco --> J
+Banco --> K
+Banco --> L
+Banco --> M
+L ..> K : <<extend>>
+@enduml

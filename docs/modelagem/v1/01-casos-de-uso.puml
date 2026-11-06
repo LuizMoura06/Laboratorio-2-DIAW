@@ -1,0 +1,25 @@
+@startuml
+!pragma layout smetana
+title AlugaMais — Casos de Uso (Modelo inicial)
+left to right direction
+actor Cliente
+actor Agente
+rectangle "Sistema de Aluguel" {
+  usecase "Cadastrar-se" as UC1
+  usecase "Autenticar-se" as UC2
+  usecase "Gerenciar cadastro" as UC3
+  usecase "Consultar veículos" as UC4
+  usecase "Criar pedido" as UC5
+  usecase "Consultar status" as UC6
+  usecase "Avaliar pedido" as UC7
+}
+Cliente --> UC1
+Cliente --> UC2
+Cliente --> UC3
+Cliente --> UC4
+Cliente --> UC5
+Cliente --> UC6
+Agente --> UC1
+Agente --> UC2
+Agente --> UC7
+@enduml

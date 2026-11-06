@@ -1,0 +1,17 @@
+@startuml
+!pragma layout smetana
+title AlugaMais — Visão Lógica Inicial
+package "frontend" {
+  component "React + Vite" as React
+}
+package "backend" {
+  component "Controller" as Controller
+  component "Service" as Service
+  component "Repository" as Repository
+}
+database "PostgreSQL (Supabase)" as DB
+React --> Controller : HTTP/JSON
+Controller --> Service
+Service --> Repository
+Repository --> DB : JDBC
+@enduml

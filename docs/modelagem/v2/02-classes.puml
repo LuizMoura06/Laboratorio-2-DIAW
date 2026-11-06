@@ -1,0 +1,76 @@
+@startuml
+!pragma layout smetana
+title AlugaMais — Diagrama de Classes (Modelo revisado)
+hide empty methods
+skinparam classAttributeIconSize 0
+class Usuario {
+  +id: UUID
+  +username: String
+  -passwordHash: String
+  +role: CLIENT | AGENT
+  +createdAt: Instant
+}
+class Sessao {
+  -tokenHash: String
+  +expiresAt: Instant
+}
+class Cliente {
+  +id: UUID
+  +fullName: String
+  +cpf: String
+  +rg: String
+  +address: String
+  +profession: String
+}
+class Empregador {
+  +id: UUID
+  +employer: String
+  +monthlyIncome: Decimal
+  +position: 1..3
+}
+class Agente {
+  +id: UUID
+  +name: String
+  +agentType: BANK | COMPANY
+  +cnpj: String
+}
+class Veiculo {
+  +id: UUID
+  +registration: String
+  +manufacturingYear: int
+  +brand: String
+  +model: String
+  +plate: String
+  +ownerType: CLIENT | COMPANY | BANK
+  +ownerName: String
+  +dailyRate: Decimal
+}
+class PedidoAluguel {
+  +id: UUID
+  +startDate: LocalDate
+  +endDate: LocalDate
+  +notes: String
+  +status: PENDING | UNDER_REVIEW | APPROVED | REJECTED | CANCELLED | CONTRACTED
+  +reviewNotes: String
+  +createdAt: Instant
+}
+class ContratoAluguel {
+  +id: UUID
+  +signedAt: Instant
+}
+class ContratoCredito {
+  +id: UUID
+  +principal: Decimal
+  +installments: int
+}
+Usuario "1" -- "0..*" Sessao
+Usuario "1" -- "0..1" Cliente
+Usuario "1" -- "0..1" Agente
+Cliente "1" -- "0..3" Empregador
+Cliente "1" -- "0..*" PedidoAluguel
+Veiculo "1" -- "0..*" PedidoAluguel
+Agente "0..1" -- "0..*" PedidoAluguel : avalia
+PedidoAluguel "1" -- "0..1" ContratoAluguel
+ContratoAluguel "1" -- "0..1" ContratoCredito
+Agente "1" -- "0..*" ContratoCredito : banco concedente
+@enduml

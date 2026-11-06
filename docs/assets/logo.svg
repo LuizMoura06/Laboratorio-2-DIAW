@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">AlugaMais</title>
+  <desc id="desc">Símbolo de um automóvel e um caminho em verde e azul.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#102c31"/>
+      <stop offset="1" stop-color="#174a4a"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#9be0b6"/>
+      <stop offset="1" stop-color="#d8f5a2"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="36" fill="url(#bg)"/>
+  <circle cx="124" cy="36" r="22" fill="#22595a" opacity=".7"/>
+  <path d="M20 122Q80 99 140 122" fill="none" stroke="#32666a" stroke-width="7" stroke-linecap="round"/>
+  <path d="M32 99h96l-8-25a15 15 0 0 0-14-10H54a15 15 0 0 0-14 10z" fill="none" stroke="url(#road)" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M30 101v12h100v-12" fill="none" stroke="url(#road)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M49 88h12m38 0h12" stroke="#9be0b6" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="49" cy="114" r="9" fill="#c2efbb"/>
+  <circle cx="111" cy="114" r="9" fill="#c2efbb"/>
+  <path d="M67 122h26" stroke="#d8f5a2" stroke-width="4" stroke-dasharray="4 7" stroke-linecap="round"/>
+</svg>

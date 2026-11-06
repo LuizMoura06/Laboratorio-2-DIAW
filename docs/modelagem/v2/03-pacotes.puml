@@ -1,0 +1,53 @@
+@startuml
+!pragma layout smetana
+title AlugaMais — Diagrama de Pacotes (Visão Lógica Revisada)
+skinparam packageStyle rectangle
+package "frontend (React + Vite)" {
+  component "AuthScreen" as AuthScreen
+  component "App / Workspace" as App
+  component "API client" as ApiClient
+  AuthScreen --> ApiClient
+  App --> ApiClient
+}
+package "backend (Spring Boot MVC)" {
+  package "auth" {
+    component "AuthController" as AuthC
+    component "AuthService" as AuthS
+  }
+  package "clients" {
+    component "ClientController" as ClientC
+    component "ClientService" as ClientS
+  }
+  package "rentals" {
+    component "RentalController" as RentalC
+    component "RentalService" as RentalS
+  }
+  package "vehicles" {
+    component "VehicleController" as VehicleC
+  }
+  package "security" {
+    component "CurrentUser / TokenFilter" as Sec
+  }
+  package "config" {
+    component "SecurityConfig / ApiErrors" as Config
+  }
+  package "database" {
+    component "Db (JDBC Repository)" as Db
+  }
+}
+database "Supabase PostgreSQL" as Pg
+ApiClient --> AuthC : HTTPS / JSON
+ApiClient --> ClientC
+ApiClient --> RentalC
+ApiClient --> VehicleC
+AuthC --> AuthS
+ClientC --> ClientS
+RentalC --> RentalS
+AuthS --> Db
+ClientS --> Db
+RentalS --> Db
+VehicleC --> Db
+Sec --> AuthS
+Config --> Sec
+Db --> Pg : JDBC/TLS
+@enduml
