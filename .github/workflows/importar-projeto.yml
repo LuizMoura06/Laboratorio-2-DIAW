@@ -15,7 +15,8 @@ jobs:
         run: |
           unzip -q Laboratorio-2-DIAW-entrega.zip -d /tmp/alugamais-import
           cp -a /tmp/alugamais-import/Laboratorio-2-DIAW/. .
-          git rm -f -- Laboratorio-2-DIAW-entrega.zip .github/workflows/importar-projeto.yml
+          rm -f .github/workflows/ci.yml
+          git rm -f -- Laboratorio-2-DIAW-entrega.zip
           git add -A
           git -c user.name='Luiz Gustavo Moura e Souza' -c user.email='206921468+LuizMoura06@users.noreply.github.com' commit -m 'feat: adiciona sistema completo de aluguel de carros'
           git push origin main
